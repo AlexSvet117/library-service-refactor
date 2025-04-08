@@ -29,3 +29,15 @@ def add_book():
     response = {"message" : "Book succesfully created",
                 "books" : [book.to_dict() for book in books]}
     return jsonify(response)
+
+
+
+@book_bp.route("/books/<string:book_id>", methods = ["DELETE"])
+def delete_book(book_id):
+    result, books = BookService.delete_book(book_id)
+    
+    if not result:
+        return jsonify({"error": " Book not found"}), 404
+    response = {"message" : f"Book with book id {book_id} sucessfully deleted",
+                "books": [book.to_dict() for book in books]}
+    return jsonify(response)

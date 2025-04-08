@@ -35,7 +35,6 @@ class BookService:
             if book.book_id == data.get("book_id"):
                 return {"book_id" : f"book_id {data.get("book_id")} already exist"}
             
-
         new_book = Book(
             book_id = data.get("book_id"),
             title = data.get("title"),
@@ -51,4 +50,11 @@ class BookService:
         return book_data
 
 
+    @staticmethod
+    def delete_book(book_id):
+        for book in book_data:
+            if book.book_id == book_id:
+                book_data.remove(book)
+                return True, book_data
+        return False, None
 
