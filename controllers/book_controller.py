@@ -23,4 +23,9 @@ def add_book():
     data = request.json
     if not data:
         return jsonify({"error": "The payload can not be empty"}), 400
-    pass
+    books = BookService.create_book(data)
+    if not isinstance(books, list):
+        return jsonify(books)
+    response = {"message" : "Book succesfully created",
+                "books" : [book.to_dict() for book in books]}
+    return jsonify(response)
