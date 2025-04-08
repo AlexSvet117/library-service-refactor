@@ -31,7 +31,6 @@ def add_book():
     return jsonify(response)
 
 
-
 @book_bp.route("/books/<string:book_id>", methods = ["DELETE"])
 def delete_book(book_id):
     result, books = BookService.delete_book(book_id)
