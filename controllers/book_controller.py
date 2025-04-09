@@ -42,19 +42,6 @@ def delete_book(book_id):
     return jsonify(response)
 
 
-# @book_bp.route("/books/<string:book_id>", methods = ["PUT"])
-# def update_book(book_id):
-
-#     book_to_update = BookService.update_book(book_id)
-#     if book_to_update:
-#         new_book = request.json
-#         book_to_update.update(new_book)
-#         return jsonify({"status" : "Book successfully updated", "books" : [book.to_dict() for book in books]}), 201
-#     return jsonify({"error": "Book not found"}), 400
-    # if not book_to_update:
-    #     return jsonify({"error": " Book not found"}), 404
-    # return jsonify(book_to_update.to_dict(), "Book successfully updated"), 200
-
 @book_bp.route("/books/<string:book_id>", methods=["PUT"])
 def update_book(book_id):
     data = request.json
@@ -64,7 +51,57 @@ def update_book(book_id):
     updated_book = BookService.update_book(book_id, data)
     
     if isinstance(updated_book, dict) and "error" in updated_book:
-        # If we get an error message from the service layer
         return jsonify(updated_book), 400
     
     return jsonify(updated_book.to_dict())
+
+@book_bp.route("/books/stats", methods=["GET"])
+def books_stats():
+    """
+    Function returns statistics of existing list of books:
+    - Total number of books in the library
+    - Number of books by read status
+    - Average rating across all books
+    - Books count by genre
+    """
+    total_books = 0
+    read = 0
+    reading = 0
+    to_read = 0
+    total_rating = 0.0
+    avg_rating = 0.0
+    genre_counts = {}
+
+    books = BookService.get_all_books()
+
+    for book in books:
+        total_books += 1
+        total_rating += book.rating
+
+        genre = book.genre if book.genre else "Unknown"
+        if genre in genre_counts:
+            genre_counts[genre] += 1
+        else:
+            genre_counts[genre] = 1
+
+        if book.read_status == "read":
+            read += 1
+        elif book.read_status == "to-read":
+            to_read += 1
+        elif book.read_status == "reading":
+            reading += 1
+
+    if total_books > 0:
+        avg_rating = total_rating / total_books
+    else:
+        avg_rating = 0
+
+    return jsonify({
+        "status": "The stats are calculated",
+        "total_books": total_books,
+        "read": read,
+        "reading": reading,
+        "to-read": to_read,
+        "average_rating": avg_rating,
+        "genre_counts": genre_counts
+    }), 200
