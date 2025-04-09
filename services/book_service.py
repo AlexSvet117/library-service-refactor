@@ -20,7 +20,7 @@ class BookService:
     def create_book(data : dict):
 
         error = validate_book_input(data)
-        if not error:
+        if error:
             return error
 
             
