@@ -1,5 +1,6 @@
 from db import book_data
 from models.book_model import Book
+from utils.validator import validate_book_input
 
 
 class BookService:
@@ -17,6 +18,11 @@ class BookService:
     
     @staticmethod
     def create_book(data : dict):
+
+        error = validate_book_input(data)
+        if not error:
+            return error
+
             
         new_book = Book(
             book_id = data.get("book_id"),
